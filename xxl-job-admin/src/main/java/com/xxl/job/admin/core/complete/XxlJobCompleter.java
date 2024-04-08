@@ -49,7 +49,10 @@ public class XxlJobCompleter {
         String triggerChildMsg = null;
         if (XxlJobContext.HANDLE_CODE_SUCCESS == xxlJobLog.getHandleCode()) {
             XxlJobInfo xxlJobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(xxlJobLog.getJobId());
-            if (xxlJobInfo!=null && xxlJobInfo.getChildJobId()!=null && xxlJobInfo.getChildJobId().trim().length()>0) {
+            // if trigger alone, cover childJobId to ignore child job trigger
+            if (xxlJobLog.getTriggerAlone() == 1) {
+                triggerChildMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_ignore_child_run") +"<<<<<<<<<<< </span><br>";
+            } else if (xxlJobInfo!=null && xxlJobInfo.getChildJobId()!=null && xxlJobInfo.getChildJobId().trim().length()>0) {
                 triggerChildMsg = "<br><br><span style=\"color:#00c0ef;\" > >>>>>>>>>>>"+ I18nUtil.getString("jobconf_trigger_child_run") +"<<<<<<<<<<< </span><br>";
 
                 String[] childJobIds = xxlJobInfo.getChildJobId().split(",");
@@ -57,7 +60,7 @@ public class XxlJobCompleter {
                     int childJobId = (childJobIds[i]!=null && childJobIds[i].trim().length()>0 && isNumeric(childJobIds[i]))?Integer.valueOf(childJobIds[i]):-1;
                     if (childJobId > 0) {
 
-                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null);
+                        JobTriggerPoolHelper.trigger(childJobId, TriggerTypeEnum.PARENT, -1, null, null, null, 0);
                         ReturnT<String> triggerChildResult = ReturnT.SUCCESS;
 
                         // add msg

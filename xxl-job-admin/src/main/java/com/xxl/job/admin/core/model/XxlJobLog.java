@@ -7,9 +7,9 @@ import java.util.Date;
  * @author xuxueli  2015-12-19 23:19:09
  */
 public class XxlJobLog {
-	
+
 	private long id;
-	
+
 	// job info
 	private int jobGroup;
 	private int jobId;
@@ -20,12 +20,13 @@ public class XxlJobLog {
 	private String executorParam;
 	private String executorShardingParam;
 	private int executorFailRetryCount;
-	
+
 	// trigger info
 	private Date triggerTime;
 	private int triggerCode;
 	private String triggerMsg;
-	
+	private int triggerAlone;
+
 	// handle info
 	private Date handleTime;
 	private int handleCode;
@@ -96,6 +97,14 @@ public class XxlJobLog {
 
 	public void setExecutorFailRetryCount(int executorFailRetryCount) {
 		this.executorFailRetryCount = executorFailRetryCount;
+	}
+
+	public int getTriggerAlone() {
+		return this.triggerAlone;
+	}
+
+	public void setTriggerAlone(int triggerAlone) {
+		this.triggerAlone = triggerAlone;
 	}
 
 	public Date getTriggerTime() {

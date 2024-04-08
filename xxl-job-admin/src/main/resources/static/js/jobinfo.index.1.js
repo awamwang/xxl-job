@@ -5,6 +5,7 @@ $(function() {
 		"deferRender": true,
 		"processing" : true,
 	    "serverSide": true,
+		"pageLength": 50,
 		"ajax": {
 			url: base_url + "/jobinfo/pageList",
 			type:"post",
@@ -147,6 +148,7 @@ $(function() {
                                     '     </button>\n' +
                                     '     <ul class="dropdown-menu" role="menu" _id="'+ row.id +'" >\n' +
                                     '       <li><a href="javascript:void(0);" class="job_trigger" >'+ I18n.jobinfo_opt_run +'</a></li>\n' +
+                                    // '       <li><a href="javascript:void(0);" class="job_trigger_alone" >'+ I18n.jobinfo_opt_trigger_alone +'</a></li>\n' +
                                     '       <li><a href="'+ logHref +'">'+ I18n.jobinfo_opt_log +'</a></li>\n' +
                                     '       <li><a href="javascript:void(0);" class="job_registryinfo" >' + I18n.jobinfo_opt_registryinfo + '</a></li>\n' +
 									job_next_time_html +
@@ -276,7 +278,8 @@ $(function() {
             data : {
                 "id" : $("#jobTriggerModal .form input[name='id']").val(),
                 "executorParam" : $("#jobTriggerModal .textarea[name='executorParam']").val(),
-				"addressList" : $("#jobTriggerModal .textarea[name='addressList']").val()
+								"addressList" : $("#jobTriggerModal .textarea[name='addressList']").val(),
+								"triggerAlone" : $("#jobTriggerModal input[name='triggerAlone']").is(':checked') ? 1 : 0,
             },
             dataType : "json",
             success : function(data){

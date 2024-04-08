@@ -37,6 +37,9 @@ public class XxlJobTrigger {
      * @param executorParam
      *          null: use job param
      *          not null: cover job param
+     * @param triggerAlone
+     * 			1: trigger alone
+     * 			0: not trigger alone
      * @param addressList
      *          null: use executor addressList
      *          not null: cover
@@ -46,7 +49,8 @@ public class XxlJobTrigger {
                                int failRetryCount,
                                String executorShardingParam,
                                String executorParam,
-                               String addressList) {
+                               String addressList,
+                               int triggerAlone) {
 
         // load data
         XxlJobInfo jobInfo = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().loadById(jobId);
@@ -80,13 +84,13 @@ public class XxlJobTrigger {
                 && group.getRegistryList()!=null && !group.getRegistryList().isEmpty()
                 && shardingParam==null) {
             for (int i = 0; i < group.getRegistryList().size(); i++) {
-                processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size());
+                processTrigger(group, jobInfo, finalFailRetryCount, triggerType, i, group.getRegistryList().size(), triggerAlone);
             }
         } else {
             if (shardingParam == null) {
                 shardingParam = new int[]{0, 1};
             }
-            processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1]);
+            processTrigger(group, jobInfo, finalFailRetryCount, triggerType, shardingParam[0], shardingParam[1], triggerAlone);
         }
 
     }
@@ -107,8 +111,9 @@ public class XxlJobTrigger {
      * @param triggerType
      * @param index                     sharding index
      * @param total                     sharding index
+     * @param triggerAlone                  trigger alone
      */
-    private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total){
+    private static void processTrigger(XxlJobGroup group, XxlJobInfo jobInfo, int finalFailRetryCount, TriggerTypeEnum triggerType, int index, int total, int triggerAlone){
 
         // param
         ExecutorBlockStrategyEnum blockStrategy = ExecutorBlockStrategyEnum.match(jobInfo.getExecutorBlockStrategy(), ExecutorBlockStrategyEnum.SERIAL_EXECUTION);  // block strategy
@@ -120,6 +125,7 @@ public class XxlJobTrigger {
         jobLog.setJobGroup(jobInfo.getJobGroup());
         jobLog.setJobId(jobInfo.getId());
         jobLog.setTriggerTime(new Date());
+        jobLog.setTriggerAlone(triggerAlone);
         XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().save(jobLog);
         logger.debug(">>>>>>>>>>> xxl-job trigger start, jobId:{}", jobLog.getId());
 

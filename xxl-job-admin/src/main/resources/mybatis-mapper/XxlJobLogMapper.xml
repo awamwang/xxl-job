@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xxl.job.admin.dao.XxlJobLogDao">
-	
+
 	<resultMap id="XxlJobLog" type="com.xxl.job.admin.core.model.XxlJobLog" >
 		<result column="id" property="id" />
 
@@ -14,11 +14,12 @@
 	    <result column="executor_param" property="executorParam" />
 		<result column="executor_sharding_param" property="executorShardingParam" />
 		<result column="executor_fail_retry_count" property="executorFailRetryCount" />
-	    
+
 	    <result column="trigger_time" property="triggerTime" />
 	    <result column="trigger_code" property="triggerCode" />
 	    <result column="trigger_msg" property="triggerMsg" />
-	    
+			<result column="trigger_alone" property="triggerAlone" />
+
 	    <result column="handle_time" property="handleTime" />
 	    <result column="handle_code" property="handleCode" />
 	    <result column="handle_msg" property="handleMsg" />
@@ -38,12 +39,13 @@
 		t.trigger_time,
 		t.trigger_code,
 		t.trigger_msg,
+		t.trigger_alone,
 		t.handle_time,
 		t.handle_code,
 		t.handle_msg,
 		t.alarm_status
 	</sql>
-	
+
 	<select id="pageList" resultMap="XxlJobLog">
 		SELECT <include refid="Base_Column_List" />
 		FROM xxl_job_log AS t
@@ -77,7 +79,7 @@
 		ORDER BY t.trigger_time DESC
 		LIMIT #{offset}, #{pagesize}
 	</select>
-	
+
 	<select id="pageListCount" resultType="int">
 		SELECT count(1)
 		FROM xxl_job_log AS t
@@ -109,30 +111,32 @@
 			</if>
 		</trim>
 	</select>
-	
+
 	<select id="load" parameterType="java.lang.Long" resultMap="XxlJobLog">
 		SELECT <include refid="Base_Column_List" />
 		FROM xxl_job_log AS t
 		WHERE t.id = #{id}
 	</select>
 
-	
+
 	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobLog" useGeneratedKeys="true" keyProperty="id" >
 		INSERT INTO xxl_job_log (
 			`job_group`,
 			`job_id`,
 			`trigger_time`,
 			`trigger_code`,
+			`trigger_alone`,
 			`handle_code`
 		) VALUES (
 			#{jobGroup},
 			#{jobId},
 			#{triggerTime},
 			#{triggerCode},
+			#{triggerAlone},
 			#{handleCode}
 		);
 		<!--<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
-			SELECT LAST_INSERT_ID() 
+			SELECT LAST_INSERT_ID()
 		</selectKey>-->
 	</insert>
 
@@ -152,13 +156,13 @@
 
 	<update id="updateHandleInfo">
 		UPDATE xxl_job_log
-		SET 
-			`handle_time`= #{handleTime}, 
+		SET
+			`handle_time`= #{handleTime},
 			`handle_code`= #{handleCode},
 			`handle_msg`= #{handleMsg}
 		WHERE `id`= #{id}
 	</update>
-	
+
 	<delete id="delete" >
 		delete from xxl_job_log
 		WHERE job_id = #{jobId}
